@@ -22,6 +22,7 @@ public class AlunoController {
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<Aluno> create(@RequestBody Aluno aluno){
         Aluno alunoCreated = service.create(aluno);
+
         return ResponseEntity.status(201).body(alunoCreated);
     }
 

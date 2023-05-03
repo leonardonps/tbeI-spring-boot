@@ -18,6 +18,7 @@ public class ProfessorController {
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<Professor> create(@RequestBody Professor professor){
         Professor professorCreated = service.create(professor);
+
         return  ResponseEntity.status(201).body(professorCreated);
     }
 
