@@ -15,4 +15,8 @@ public class MatriculaAlunoService {
         return repository.save(matriculaAluno);
     }
 
+    public void updateGrades(){
+
+    }
+
 }

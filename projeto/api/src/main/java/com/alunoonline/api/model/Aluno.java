@@ -23,5 +23,4 @@ public class Aluno implements Serializable {
     private String email;
     private String curso;
 
-
 }
