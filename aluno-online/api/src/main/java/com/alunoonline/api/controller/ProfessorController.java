@@ -24,11 +24,10 @@ public class ProfessorController {
         return ResponseEntity.status(201).body(professorCreated);
     }
 
-    @PutMapping
-    @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<Professor> update(@RequestBody Professor professor){
-        Professor professorUpdated = service.update(professor);
-        return ResponseEntity.status(200).body(professorUpdated);
+    @PutMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void update(@PathVariable Long id, @RequestBody Professor novoProfessorInfo){
+        service.update(id, novoProfessorInfo);
     }
 
     @GetMapping("/all")

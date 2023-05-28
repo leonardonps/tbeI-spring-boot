@@ -24,11 +24,10 @@ public class DisciplinaController {
         return ResponseEntity.status(201).body(disciplinaCreated);
     }
 
-    @PutMapping
-    @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<Disciplina> update(@RequestBody Disciplina disciplina){
-        Disciplina disciplinaUpdated = service.update(disciplina);
-        return ResponseEntity.status(200).body(disciplinaUpdated);
+    @PutMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void update(@PathVariable Long id, @RequestBody Disciplina newDisciplinaInfo){
+        service.update(id, newDisciplinaInfo);
     }
 
     @GetMapping("/all")

@@ -18,13 +18,26 @@ public class AlunoService {
         return repository.save(aluno);
     }
 
-    public Aluno update(Aluno aluno){
-        Optional<Aluno> alunoEncontrado = repository.findById(aluno.getId());
-        alunoEncontrado.get().setNome(aluno.getNome());
-        alunoEncontrado.get().setEmail(aluno.getEmail());
-        alunoEncontrado.get().setCurso(aluno.getCurso());
+    public void update(Long id, Aluno novoAlunoInfo){
 
-        return repository.save(alunoEncontrado.get());
+        Optional<Aluno> alunoToUpdate = repository.findById(id);
+
+        if(alunoToUpdate.isPresent()) {
+
+            if (novoAlunoInfo.getNome() != null) {
+                alunoToUpdate.get().setNome(novoAlunoInfo.getNome());
+            }
+
+            if (novoAlunoInfo.getEmail() != null) {
+                alunoToUpdate.get().setEmail(novoAlunoInfo.getEmail());
+            }
+
+            if (novoAlunoInfo.getCurso() != null) {
+                alunoToUpdate.get().setNome(novoAlunoInfo.getCurso());
+            }
+
+            repository.save(alunoToUpdate.get());
+        }
     }
 
     public List<Aluno> findAll(){

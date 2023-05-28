@@ -24,11 +24,10 @@ public class AlunoController {
         return ResponseEntity.status(201).body(alunoCreated);
     }
 
-    @PutMapping
-    @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<Aluno> update(@RequestBody Aluno aluno){
-        Aluno alunoUpdated = service.update(aluno);
-        return ResponseEntity.status(200).body(alunoUpdated);
+    @PutMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void update(@PathVariable Long id, @RequestBody Aluno novoAlunoInfo){
+        service.update(id, novoAlunoInfo);
     }
 
     @GetMapping("/all")
@@ -48,5 +47,4 @@ public class AlunoController {
     public void deleteById(@PathVariable Long id){
         service.deleteById(id);
     }
-
 }

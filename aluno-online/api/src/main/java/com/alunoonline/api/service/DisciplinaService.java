@@ -1,7 +1,9 @@
 package com.alunoonline.api.service;
 
 import com.alunoonline.api.model.Disciplina;
+import com.alunoonline.api.model.Professor;
 import com.alunoonline.api.repository.DisciplinaRepository;
+import com.alunoonline.api.repository.ProfessorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -12,31 +14,47 @@ import java.util.Optional;
 public class DisciplinaService {
 
     @Autowired
-    DisciplinaRepository repository;
+    DisciplinaRepository repositoryDisciplina;
+    @Autowired
+    ProfessorRepository repositoryProfessor;
 
     public Disciplina create (Disciplina disciplina){
-        return repository.save(disciplina);
+        return repositoryDisciplina.save(disciplina);
     }
 
-    public Disciplina update(Disciplina disciplina){
-        Optional<Disciplina> disciplinaEncontrada = repository.findById(disciplina.getId());
-        disciplinaEncontrada.get().setNome(disciplina.getNome());
-        disciplinaEncontrada.get().getProfessor().setNome(disciplina.getProfessor().getNome());
-        disciplinaEncontrada.get().getProfessor().setEmail(disciplina.getProfessor().getEmail());
+    public void update(Long id, Disciplina novoDisciplinaInfo){
+        Optional<Disciplina> disciplinaToUpdate= repositoryDisciplina.findById(id);
 
-        return repository.save(disciplinaEncontrada.get());
+        if(disciplinaToUpdate.isPresent()){
+
+            if(novoDisciplinaInfo.getNome() != null){
+                disciplinaToUpdate.get().setNome(novoDisciplinaInfo.getNome());
+            }
+
+            if(novoDisciplinaInfo.getProfessor() != null){
+                Long novoProfessorId = novoDisciplinaInfo.getProfessor().getId();
+                Optional<Professor> novoProfessor = repositoryProfessor.findById(novoProfessorId);
+
+                if(novoProfessor.isPresent()){
+                    disciplinaToUpdate.get().setProfessor(novoProfessor.get());
+                }
+            }
+
+            repositoryDisciplina.save(disciplinaToUpdate.get());
+        }
+
     }
 
     public List<Disciplina> findAll(){
-        return repository.findAll();
+        return repositoryDisciplina.findAll();
     }
 
     public Optional<Disciplina> findById(Long id){
-        return repository.findById(id);
+        return repositoryDisciplina.findById(id);
     }
 
     public void deleteById(Long id){
-        repository.deleteById(id);
+        repositoryDisciplina.deleteById(id);
     }
 
 }

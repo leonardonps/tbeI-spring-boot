@@ -18,12 +18,21 @@ public class ProfessorService {
         return repository.save(professor);
     }
 
-    public Professor update(Professor professor){
-        Optional<Professor> professorEncontrado= repository.findById(professor.getId());
-        professorEncontrado.get().setNome(professor.getNome());
-        professorEncontrado.get().setEmail(professor.getEmail());
+    public void update(Long id, Professor novoProfessorInfo){
+        Optional<Professor> professorToUpdate = repository.findById(id);
 
-        return repository.save(professorEncontrado.get());
+        if(professorToUpdate.isPresent()) {
+
+            if(novoProfessorInfo.getNome() != null) {
+                professorToUpdate.get().setNome(novoProfessorInfo.getNome());
+            }
+
+            if(novoProfessorInfo.getEmail() != null) {
+                professorToUpdate.get().setEmail(novoProfessorInfo.getEmail());
+            }
+
+        }
+         repository.save(professorToUpdate.get());
     }
 
     public List<Professor> findAll(){
