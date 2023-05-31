@@ -3,6 +3,7 @@ package com.alunoonline.api.controller;
 import com.alunoonline.api.model.Aluno;
 import com.alunoonline.api.model.MatriculaAluno;
 import com.alunoonline.api.model.dtos.AtualizarNotasRequestDto;
+import com.alunoonline.api.model.dtos.HistoricoAlunoDto;
 import com.alunoonline.api.service.MatriculaAlunoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -36,6 +37,12 @@ public class MatriculaAlunoController {
     @ResponseStatus(HttpStatus.OK)
     public Optional<MatriculaAluno> findById(@PathVariable Long matriculaAlunoId){
         return service.findById(matriculaAlunoId);
+    }
+
+    @GetMapping("/historico-aluno/{alunoId}")
+    @ResponseStatus(HttpStatus.OK)
+    public HistoricoAlunoDto getHistoricoAluno(@PathVariable Long alunoId) {
+        return service.getHistoricoFromAluno(alunoId);
     }
 
     @DeleteMapping("/{matriculaAlunoId}")

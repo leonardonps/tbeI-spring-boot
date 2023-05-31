@@ -4,6 +4,8 @@ import com.alunoonline.api.model.Aluno;
 import com.alunoonline.api.model.Disciplina;
 import com.alunoonline.api.model.MatriculaAluno;
 import com.alunoonline.api.model.dtos.AtualizarNotasRequestDto;
+import com.alunoonline.api.model.dtos.DisciplinasAlunoDto;
+import com.alunoonline.api.model.dtos.HistoricoAlunoDto;
 import com.alunoonline.api.model.enums.StatusMatriculaAluno;
 import com.alunoonline.api.repository.AlunoRepository;
 import com.alunoonline.api.repository.DisciplinaRepository;
@@ -94,7 +96,7 @@ public class MatriculaAlunoService {
     }
 
     public void deleteById(Long matriculaAlunoId){
-        matriculaAlunoRepository.findById(matriculaAlunoId);
+        matriculaAlunoRepository.deleteById(matriculaAlunoId);
     }
 
     public void updateGrades(AtualizarNotasRequestDto atualizarNotasRequestDto,
@@ -113,13 +115,14 @@ public class MatriculaAlunoService {
                 matriculaAlunoToUpdate.get().setNota2(atualizarNotasRequestDto.getNota2());
             }
 
-            List<Double> notas = new ArrayList<>();
-
-            notas.add(matriculaAlunoToUpdate.get().getNota1());
-            notas.add(matriculaAlunoToUpdate.get().getNota2());
-
-            Double media = this.doAverage(notas);
-            StatusMatriculaAluno statusMatriculaAluno = this.classifyAverageToStatus(media);
+            StatusMatriculaAluno statusMatriculaAluno = this.classifyAverageToStatus(
+                    this.doAverage(
+                            this.addGradesInArrayList(
+                                matriculaAlunoToUpdate.get().getNota1(),
+                                matriculaAlunoToUpdate.get().getNota2()
+                            )
+                    )
+            );
 
             matriculaAlunoToUpdate.get().setStatus(statusMatriculaAluno);
 
@@ -149,6 +152,67 @@ public class MatriculaAlunoService {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,
                     "Matrícula não encontrada.");
         }
+    }
+
+    public HistoricoAlunoDto getHistoricoFromAluno(Long alunoId){
+        List<MatriculaAluno> matriculasAluno = matriculaAlunoRepository.findAlunoById(alunoId);
+
+        Optional<Aluno> aluno = alunoRepository.findById(alunoId);
+
+        if(aluno.isPresent()){
+            HistoricoAlunoDto historicoAlunoDto = new HistoricoAlunoDto();
+
+            historicoAlunoDto.setNomeAluno(aluno.get().getNome());
+            historicoAlunoDto.setCursoAluno(aluno.get().getCurso());
+
+            if(!matriculasAluno.isEmpty()){
+
+                List<DisciplinasAlunoDto> disciplinasList = new ArrayList<>();
+
+                for(MatriculaAluno matriculaAluno : matriculasAluno){
+
+                    DisciplinasAlunoDto disciplinasAlunoDto = new DisciplinasAlunoDto();
+
+                    disciplinasAlunoDto.setNomeDisciplina(matriculaAluno.getDisciplina().getNome());
+                    disciplinasAlunoDto.setProfessorDisciplina(matriculaAluno.getDisciplina().getProfessor().getNome());
+                    disciplinasAlunoDto.setNota1(matriculaAluno.getNota1());
+                    disciplinasAlunoDto.setNota2(matriculaAluno.getNota2());
+
+                    disciplinasAlunoDto.setMedia(
+                            this.doAverage(
+                                    this.addGradesInArrayList(
+                                        matriculaAluno.getNota1(),
+                                        matriculaAluno.getNota2()
+                                    )
+                            )
+                    );
+
+                    disciplinasAlunoDto.setStatus(matriculaAluno.getStatus());
+
+                    disciplinasList.add(disciplinasAlunoDto);
+                }
+
+                historicoAlunoDto.setDisciplinasAlunoDtoList(disciplinasList);
+
+                return historicoAlunoDto;
+
+            }else{
+                return historicoAlunoDto;
+            }
+
+        } else{
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Aluno não encontrado.");
+        }
+    }
+
+    private List addGradesInArrayList(Double ... notas){
+        List<Double> notasList = new ArrayList<>();
+
+        for(Double nota : notas){
+            notasList.add(nota);
+        }
+
+        return notasList;
     }
 
     private Double doAverage(List<Double> notas){
