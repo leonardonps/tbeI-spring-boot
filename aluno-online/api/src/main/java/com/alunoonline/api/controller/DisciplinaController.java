@@ -42,6 +42,12 @@ public class DisciplinaController {
         return service.findById(id);
     }
 
+    @GetMapping ("/professor/{professorId}")
+    @ResponseStatus (HttpStatus.OK)
+    public List<Disciplina> findByProfessorId (@PathVariable Long professorId) {
+        return service.findByProfessorId(professorId);
+    }
+
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteById(@PathVariable Long id){
