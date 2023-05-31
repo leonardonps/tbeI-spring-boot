@@ -115,16 +115,21 @@ public class MatriculaAlunoService {
                 matriculaAlunoToUpdate.get().setNota2(atualizarNotasRequestDto.getNota2());
             }
 
-            StatusMatriculaAluno statusMatriculaAluno = this.classifyAverageToStatus(
-                    this.doAverage(
-                            this.addGradesInArrayList(
-                                matriculaAlunoToUpdate.get().getNota1(),
-                                matriculaAlunoToUpdate.get().getNota2()
-                            )
-                    )
-            );
+            if(atualizarNotasRequestDto.getNota1() != null
+                    && atualizarNotasRequestDto.getNota2() != null) {
 
-            matriculaAlunoToUpdate.get().setStatus(statusMatriculaAluno);
+                matriculaAlunoToUpdate.get().setStatus(
+                        this.classifyAverageToStatus(
+                            this.doAverage(
+                                    this.addGradesInArrayList(
+                                        matriculaAlunoToUpdate.get().getNota1(),
+                                        matriculaAlunoToUpdate.get().getNota2()
+                                )
+                            )
+                        )
+                );
+            }
+
 
             matriculaAlunoRepository.save(matriculaAlunoToUpdate.get());
 
@@ -155,7 +160,7 @@ public class MatriculaAlunoService {
     }
 
     public HistoricoAlunoDto getHistoricoFromAluno(Long alunoId){
-        List<MatriculaAluno> matriculasAluno = matriculaAlunoRepository.findAlunoById(alunoId);
+        List<MatriculaAluno> matriculasAluno = matriculaAlunoRepository.findByAlunoId(alunoId);
 
         Optional<Aluno> aluno = alunoRepository.findById(alunoId);
 
@@ -178,14 +183,18 @@ public class MatriculaAlunoService {
                     disciplinasAlunoDto.setNota1(matriculaAluno.getNota1());
                     disciplinasAlunoDto.setNota2(matriculaAluno.getNota2());
 
-                    disciplinasAlunoDto.setMedia(
-                            this.doAverage(
-                                    this.addGradesInArrayList(
-                                        matriculaAluno.getNota1(),
-                                        matriculaAluno.getNota2()
-                                    )
-                            )
-                    );
+
+                    if(matriculaAluno.getNota1() != null
+                            && matriculaAluno.getNota2() != null) {
+                        disciplinasAlunoDto.setMedia(
+                                this.doAverage(
+                                        this.addGradesInArrayList(
+                                                matriculaAluno.getNota1(),
+                                                matriculaAluno.getNota2()
+                                        )
+                                )
+                        );
+                    }
 
                     disciplinasAlunoDto.setStatus(matriculaAluno.getStatus());
 
@@ -207,6 +216,7 @@ public class MatriculaAlunoService {
 
     private List addGradesInArrayList(Double ... notas){
         List<Double> notasList = new ArrayList<>();
+
 
         for(Double nota : notas){
             notasList.add(nota);

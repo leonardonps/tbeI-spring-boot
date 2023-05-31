@@ -8,5 +8,5 @@ import java.util.List;
 
 @Repository
 public interface MatriculaAlunoRepository extends JpaRepository<MatriculaAluno, Long> {
-    List<MatriculaAluno> findAlunoById(Long alunoId);
+    List<MatriculaAluno> findByAlunoId(Long alunoId);
 }
